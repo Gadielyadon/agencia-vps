@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<!--
+	Propósito: Página de inicio (index) minimalista y moderna de e-commerce.
+	Relación: Consume APIs expuestas por `backend/server.js` y controlada por `public/js/app.js`.
+	-->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title> YADON-AGENCIA</title>
+	<!-- Bootstrap CSS (última estable 5.x) -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+	<!-- Bootstrap Icons -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+	
+	<style>
+
+	:root {
+  --bg-main: #0f172a;      /* fondo oscuro de la app */
+  --bg-card: #1e293b;      /* fondo de cada tarjeta */
+  --text-main: #f8fafc;    /* texto principal */
+  --text-muted: #94a3b8;   /* texto secundario */
+  --primary: #3b82f6;      /* azul botones */
+  --primary-dark: #2563eb; /* azul oscuro hover */
+  --success: #16a34a;      /* verde precios */
+  --price-special: #2563eb;/* azul para precios destacados */
+  --border-soft: #334155;  /* bordes suaves */
+}
+
+/* GLOBAL */
+body {
+  background: var(--bg-main);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-main);
+  margin: 0;
+  padding: 0;
+}
+
+/* GRIDS */
+.products-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* móvil: una columna */
+  gap: 12px;
+  padding: 12px;
+}
+
+@media (min-width: 576px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr); /* tablet */
+  }
+}
+
+@media (min-width: 992px) {
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr); /* escritorio */
+  }
+}
+
+@media (min-width: 1400px) {
+  .products-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* TARJETAS */
+.catalog-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  border: 1px solid var(--border-soft);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.catalog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.25);
+}
+
+/* IMAGEN */
+.catalog-img-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.catalog-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* BODY */
+.catalog-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* TITULO */
+.catalog-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  text-align: left;
+  margin-bottom: 4px;
+}
+
+/* DETALLES */
+.catalog-details {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: left;
+}
+
+/* PRECIO */
+.catalog-price {
+  align-self: flex-start;
+  background: var(--success);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+/* PRECIO ESPECIAL */
+.catalog-price.special {
+  background: var(--price-special);
+}
+
+/* DESCRIPCIÓN */
+.catalog-desc {
+  font-size: 0.85rem;
+  color: var(--text-main);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* BOTÓN */
+.catalog-btn {
+  margin-top: 8px;
+  background: var(--primary);
+  border: none;
+  color: #fff;
+  font-size: 0.9rem;
+  padding: 8px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.catalog-btn:hover {
+  background: var(--primary-dark);
+}
+
+/* MOBILE */
+@media (max-width: 576px) {
+  .catalog-body {
+    padding: 10px;
+    gap: 4px;
+  }
+  .catalog-title { font-size: 0.95rem; }
+  .catalog-details { font-size: 0.75rem; }
+  .catalog-price { font-size: 0.9rem; padding: 4px 8px; }
+  .catalog-desc { font-size: 0.8rem; -webkit-line-clamp: 2; }
+  .catalog-btn { font-size: 0.85rem; padding: 6px; }
+}
+
+#calcSection {
+  background: #111827; /* oscuro como la imagen */
+  color: #fff;
+}
+
+#calcSection h2 {
+  color: #fff;
+}
+
+#autoSelect {
+  background: #1f2937;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+}
+
+.form-range {
+  accent-color: #3b82f6; /* azul */
+}
+
+#resultadoCalc {
+  background: #1f2937;
+  border-radius: 12px;
+}
+
+#resultadoCalc span {
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+/* Mobile */
+@media(max-width:768px){
+  #calcSection .row {
+    gap: 1rem;
+  }
+}
+/* Caja anticipo */
+.anticipo-box {
+  background: #2563eb;
+  color: #fff;
+  padding: 14px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+
+/* Slider */
+.form-range {
+  accent-color: #2563eb;
+}
+
+/* Marcas debajo del slider */
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+</style>
+
+</head>
+<body>
+
+
+
+
+
+<div class="modal fade" id="productModal" tabindex="-1">
+  <div class="modal-dialog modal-fullscreen-sm-down modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalProductName"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <img id="modalProductImg" class="img-fluid rounded mb-3">
+        <p id="modalProductDesc" class="text-muted"></p>
+        <small id="modalProductSku" class="text-uppercase text-secondary"></small>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+	<!-- Main -->
+<main class="py-5">
+
+<section class="hero py-5" style="background: linear-gradient(135deg, #0d1b2a, #1b263b);">
+  <div class="container">
+    <div class="row align-items-center">
+
+      <!-- IZQUIERDA -->
+      <div class="col-lg-6 text-white mb-4 mb-lg-0">
+        <h1 class="fw-bold display-5">
+          Yadon Automotores
+        </h1>
+
+        <p class="lead opacity-75">
+          Consultá precios y calculá tu entrega en segundos.
+        </p>
+
+        <span class="badge rounded-pill text-bg-warning mb-3">
+          Autos en stock: 12
+        </span>
+
+        <div class="d-flex gap-2 flex-wrap mt-3">
+          <a href="#catalogo" class="btn btn-primary btn-lg">
+            <i class="bi bi-car-front me-2"></i>Ver catálogo
+          </a>
+        
+        </div>
+      </div>
+
+      <!-- DERECHA -->
+      <div class="col-lg-6 text-center">
+        <img
+          src="/images/logoagencialetrasnegras.PNG"
+          alt="Yadon Automotores"
+          class="img-fluid"
+          style="
+            max-width: 320px;
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,.4));
+            opacity: .95;
+          "
+        >
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+  <!-- Grid de Productos -->
+  <section id="catalogo" class="py-5">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h2 class="h4 m-0">Productos</h2>
+        <div class="input-group" style="max-width: 700px;">
+          <button id="categoryDropdownBtn" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Categorías
+          </button>
+          <ul id="categoryDropdownMenu" class="dropdown-menu"></ul>
+          <input id="searchInput" type="search" class="form-control" placeholder="Buscar autos..." aria-label="Buscar producto">
+          <button class="btn btn-primary" type="button" aria-label="Buscar"><i class="bi bi-search"></i></button>
+        </div>
+      </div>
+
+      <!-- Filtros de categorías (píldoras) -->
+      <div class="mb-3">
+        <ul id="categoryFilters" class="nav nav-pills gap-2 small">
+          <!-- Rellenado por app.js -->
+        </ul>
+      </div>
+
+      <div id="productsGrid" class="row g-4">
+        <!-- Productos renderizados por app.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Calculadora -->
+<section id="calcSection" class="py-5" style="display:none;">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-12">
+        <h2 class="fw-bold">Calculadora de Entrega</h2>
+        <p class="text-muted">Ajusta el anticipo para ver tu saldo a financiar.</p>
+      </div>
+    </div>
+
+    <div class="row g-4">
+
+      <!-- Select auto -->
+      <div class="col-12">
+        <label for="autoSelect" class="form-label fw-semibold">Selecciona un auto</label>
+        <select id="autoSelect" class="form-select"></select>
+      </div>
+
+      <!-- Anticipo -->
+      <div class="col-12">
+
+        <!-- Caja azul -->
+        <div class="anticipo-box mb-2">
+          <div id="anticipoPorcentaje">Anticipo: 1%</div>
+          <div id="anticipoMonto">$0</div>
+        </div>
+
+        <!-- Slider -->
+        <input
+          type="range"
+          class="form-range"
+          min="1"
+          max="100"
+          step="1"
+          value="1"
+          id="descuentoInput"
+        >
+
+        <!-- Marcas visibles -->
+        <div class="range-labels">
+          <span>1%</span>
+          <span>25%</span>
+          <span>50%</span>
+          <span>75%</span>
+          <span>100%</span>
+        </div>
+
+      </div>
+
+      <!-- Resultado -->
+      <div class="col-12">
+        <div id="resultadoCalc" class="resultado-box" style="display:none;">
+          <p class="mb-1">Precio del vehículo: <span id="precioOriginal"></span></p>
+          <p class="mb-1">Anticipo: <span id="montoDescuento"></span></p>
+          <p class="mb-0 fw-bold">Saldo a financiar: <span id="totalPagar"></span></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+
+
+</main>
+
+
+
+
+	<!-- Offcanvas Perfil -->
+	<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasProfile" aria-labelledby="offcanvasProfileLabel">
+		<div class="offcanvas-header">
+			<h5 class="offcanvas-title" id="offcanvasProfileLabel"><i class="bi bi-person-gear me-2"></i>Mi perfil</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+		</div>
+		
+				
+			
+	<!-- Footer -->
+	<footer class="py-4 border-top">
+  <div class="container small">
+    <div class="d-flex justify-content-between align-items-center">
+		<span>&copy; <span id="year"></span> YADON</span>
+
+
+      <a
+        href="https://wa.me/543834755724"
+        target="_blank"
+        class="text-decoration-none fw-semibold"
+      >
+        Creado por <strong>YAD WEB</strong>
+      </a>
+    </div>
+  </div>
+</footer>
+
+	<!-- Bootstrap Bundle + App -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+	<script src="/js/app.js"></script>
+</body>
+</html>
+
+
